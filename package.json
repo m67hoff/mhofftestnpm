@@ -1,0 +1,21 @@
+{
+  "name": "mhofftestnpm",
+  "version": "0.0.10",
+  "description": "test npm deploy",
+  "author": "mhoff@web.de",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m67hoff/mhofftestnpm"
+  },
+  "main": "server.js",
+  "bin": {
+    "mhofftestnpm": "./server.js"
+  },
+  "scripts": {
+    "install": "#ln -s $PWD /opt"
+  },
+  "dependencies": {
+    "express": "^4.16.2"
+  }
+}
