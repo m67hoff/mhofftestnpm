@@ -13,7 +13,7 @@
     "mhofftestnpm": "./server.js"
   },
   "scripts": {
-    "install": "#ln -s $PWD /opt"
+    "install": "# echo whoami"
   },
   "dependencies": {
     "express": "^4.16.2"
