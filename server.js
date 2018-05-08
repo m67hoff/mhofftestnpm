@@ -25,6 +25,8 @@ app.listen(PORT, function () {
   console.log('express', 'server starting on ' + PORT)
 })
 
+console.log('static_path:', path.join(__dirname, '/webclient'))
+
 app.use(express.static(path.join(__dirname, '/webclient')))
 
 app.get('/info', (req, res) => {
