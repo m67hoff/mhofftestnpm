@@ -6,7 +6,7 @@ const path = require('path')
 const express = require('express')
 const app = express()
 
-const CONFIG = './serverconfig.json'
+const CONFIG = path.join(__dirname, './serverconfig.json') 
 var PORT = 8080
 
 function json2s (obj) { return JSON.stringify(obj, null, 2) }  // format JSON payload for log
