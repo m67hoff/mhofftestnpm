@@ -6,26 +6,23 @@ const path = require('path')
 const express = require('express')
 const app = express()
 
-
 const DEFAULTCLIENTCONFIG = path.join(__dirname, './webclient/clientconfig.json')
 const CLIENTCONFIG = './clientconfig.json'
-
 
 const DEFAULTSERVERCONFIG = path.join(__dirname, './serverconfig.json')
 const SERVERCONFIG = './serverconfig.json'
 var PORT = 8080
 var LOGLEVEL = 'warn'
 
-function json2s(obj) { return JSON.stringify(obj, null, 2) }  // format JSON payload for log
+function json2s (obj) { return JSON.stringify(obj, null, 2) } // format JSON payload for log
 
-function loadConf() {
+function loadConf () {
   try {
     var c = JSON.parse(fs.readFileSync(SERVERCONFIG))
     if (c.LOGLEVEL) { LOGLEVEL = c.LOGLEVEL }
     console.log('Read custom config - Set LOGLEVEL to %j', c.LOGLEVEL)
     if (c.PORT) { PORT = c.PORT }
     return c
-
   } catch (e) {
     console.log('Read custom serverconfig failed : %j', SERVERCONFIG)
   }
@@ -37,18 +34,17 @@ function loadConf() {
     console.log('Read dEfault config - Set LOGLEVEL to %j', c.LOGLEVEL)
     if (c.PORT) { PORT = c.PORT }
     return c
-
   } catch (e) {
     console.log('Read default serverconfig failed : %j', DEFAULTSERVERCONFIG)
     console.log('--> exit')
-    exit 
+    process.exit(1);
   }
 }
 
 loadConf()
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
-app.listen(PORT, function() {
+app.listen(PORT, function () {
   console.log('express', 'server starting on ' + PORT)
 })
 
