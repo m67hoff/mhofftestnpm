@@ -56,21 +56,21 @@ app.listen(PORT, function () {
 app.get('/config', (req, res) => {
   log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
-  log.info('express', 'config:\n', json2s(out))
+  log.verbose('express', 'config:\n', json2s(out))
   res.send(out)
 })
 
 app.get('/clientconfig.json', (req, res) => {
   log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
-  log.info('express', 'config:\n', json2s(out))
+  log.verbose('express', 'config:\n', json2s(out))
   res.send(out)
 })
 
 app.get('/info', (req, res) => {
   log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = '<pre>' + json2s(process.env) + '</pre>'
-  log.info('express', 'process.env:\n', json2s(process.env))
+  log.verbose('express', 'process.env:\n', json2s(process.env))
   res.send(out)
 })
 
