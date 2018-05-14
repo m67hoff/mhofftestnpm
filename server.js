@@ -16,6 +16,8 @@ function json2s (obj) { return JSON.stringify(obj, null, 2) }  // format JSON pa
 
 function loadConf () {
   var c = JSON.parse(fs.readFileSync(CONFIG))
+  if (c.LOGLEVEL) { log.level = c.LOGLEVEL }
+  console.log('log  ', 'Read Config - Set LOGLEVEL to %j', c.LOGLEVEL)
   if (c.PORT) { PORT = c.PORT }
   return c
 }
