@@ -26,7 +26,7 @@ function readConfig (cust, def) {
   } catch (e) {
     log.warn('config', 'Read custom config failed : %j', cust)
   }
-  log.info('config', 'Try default config: %j', def)
+  log.warn('config', 'Try default config: %j', def)
   try {
     f = fs.readFileSync(def)
     return f

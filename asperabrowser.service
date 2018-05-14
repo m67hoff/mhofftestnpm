@@ -1,0 +1,20 @@
+[Unit]
+Description=AsperaBrowser node.js server
+Wants=network-online.target
+After=network-online.target
+ConditionPathExists=/usr/lib/node_modules/mhofftestnpm
+
+[Service]
+ExecStart=/usr/bin/mhofftestnpm
+WorkingDirectory=/home/asperabrowser
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=asperabrowser
+
+User=asperabrowser
+Group=asperabrowser
+
+[Install]
+WantedBy=multi-user.target
