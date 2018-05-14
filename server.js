@@ -39,11 +39,13 @@ function readConfig (cust, def) {
 
 function loadConf () {
   var c = JSON.parse(readConfig(SERVERCONFIG, DEFAULTSERVERCONFIG))
-  if (c.LOGLEVEL) { LOGLEVEL = c.LOGLEVEL }
-  log.info('config', 'Read config - Set LOGLEVEL to %j', LOGLEVEL)
-  if (c.PORT) { PORT = c.PORT }
+  if (c.LOGLEVEL) { log.level = c.LOGLEVEL }
+  log.warn('log  ', 'Read Config - Set LOGLEVEL to %j', c.LOGLEVEL)
+   if (c.PORT) { PORT = c.PORT }
   return c
 }
+log.stream = LOGOUTPUT
+log.level = LOGLEVEL
 loadConf()
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
@@ -52,21 +54,21 @@ app.listen(PORT, function () {
 })
 
 app.get('/config', (req, res) => {
-  log.info('config', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
   log.info('express', 'config:\n', json2s(out))
   res.send(out)
 })
 
 app.get('/clientconfig.json', (req, res) => {
-  log.info('config', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
   log.info('express', 'config:\n', json2s(out))
   res.send(out)
 })
 
 app.get('/info', (req, res) => {
-  log.info('config', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = '<pre>' + json2s(process.env) + '</pre>'
   log.info('express', 'process.env:\n', json2s(process.env))
   res.send(out)
