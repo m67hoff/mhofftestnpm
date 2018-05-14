@@ -26,7 +26,7 @@ function loadConf() {
     if (c.PORT) { PORT = c.PORT }
     return c
 
-  } catch {
+  } catch (e) {
     console.log('Read custom serverconfig failed : %j', SERVERCONFIG)
   }
 
@@ -38,7 +38,7 @@ function loadConf() {
     if (c.PORT) { PORT = c.PORT }
     return c
 
-  } catch {
+  } catch (e) {
     console.log('Read default serverconfig failed : %j', DEFAULTSERVERCONFIG)
     console.log('--> exit')
     exit 
