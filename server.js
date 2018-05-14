@@ -16,31 +16,31 @@ var LOGLEVEL = 'warn'
 
 function json2s (obj) { return JSON.stringify(obj, null, 2) } // format JSON payload for log
 
-function loadConf () {
+function readConfig (cust, def) {
   try {
-    var c = JSON.parse(fs.readFileSync(SERVERCONFIG))
-    if (c.LOGLEVEL) { LOGLEVEL = c.LOGLEVEL }
-    console.log('Read custom config - Set LOGLEVEL to %j', c.LOGLEVEL)
-    if (c.PORT) { PORT = c.PORT }
-    return c
+    var f = fs.readFileSync(cust)
+    return f
   } catch (e) {
-    console.log('Read custom serverconfig failed : %j', SERVERCONFIG)
+    console.log('Read custom config failed : %j', cust)
   }
-
-  console.log('Try default serverconfig: %j', DEFAULTSERVERCONFIG)
+  console.log('Try default config: %j', def)
   try {
-    var c = JSON.parse(fs.readFileSync(DEFAULTSERVERCONFIG))
-    if (c.LOGLEVEL) { LOGLEVEL = c.LOGLEVEL }
-    console.log('Read dEfault config - Set LOGLEVEL to %j', c.LOGLEVEL)
-    if (c.PORT) { PORT = c.PORT }
-    return c
+    f = fs.readFileSync(def)
+    return f
   } catch (e) {
-    console.log('Read default serverconfig failed : %j', DEFAULTSERVERCONFIG)
+    console.log('Read default config failed : %j', def)
     console.log('--> exit')
     process.exit(1)
   }
 }
 
+function loadConf () {
+  var c = JSON.parse(readConfig(SERVERCONFIG, DEFAULTSERVERCONFIG))
+  if (c.LOGLEVEL) { LOGLEVEL = c.LOGLEVEL }
+  console.log('Read config - Set LOGLEVEL to %j', LOGLEVEL)
+  if (c.PORT) { PORT = c.PORT }
+  return c
+}
 loadConf()
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
@@ -48,12 +48,16 @@ app.listen(PORT, function () {
   console.log('express', 'server starting on ' + PORT)
 })
 
-console.log('static_path:', path.join(__dirname, '/webclient'))
-app.use(express.static(path.join(__dirname, '/webclient')))
-
 app.get('/config', (req, res) => {
   console.log('NodeRequest ' + req.method + ' ' + req.originalUrl)
-  var out = JSON.parse(fs.readFileSync(CLIENTCONFIG))
+  var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
+  console.log('env:', json2s(out))
+  res.send(out)
+})
+
+app.get('/clientconfig.json', (req, res) => {
+  console.log('NodeRequest ' + req.method + ' ' + req.originalUrl)
+  var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
   console.log('env:', json2s(out))
   res.send(out)
 })
@@ -64,3 +68,6 @@ app.get('/info', (req, res) => {
   console.log('env:', json2s(process.env))
   res.send(out)
 })
+
+console.log('static_path:', path.join(__dirname, '/webclient'))
+app.use(express.static(path.join(__dirname, '/webclient')))
