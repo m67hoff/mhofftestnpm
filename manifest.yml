@@ -1,4 +1,0 @@
-applications:
-- name: mhofftestnpm
-  host: mhofftestnpm
-  memory: 128M
