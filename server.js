@@ -4,13 +4,14 @@ const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const app = express()
+const package = require('./package.json')
 
 const helmet = require('helmet')
 app.use(helmet())
 
 
 const LOGOUTPUT = process.stdout
-log.info('express', 'Moin Moin from mhofftestnpm')
+log.info('express', 'Moin Moin from mhofftestnpm v' + package.version)
 
 const DEFAULTCLIENTCONFIG = path.join(__dirname, './webclient/clientconfig.json')
 const CLIENTCONFIG = './clientconfig.json'
