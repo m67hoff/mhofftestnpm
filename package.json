@@ -13,7 +13,9 @@
     "mhofftestnpm": "./server.js"
   },
   "scripts": {
-    "install": "whoami"
+    "install": "whoami",
+    "start": "node server.js",
+		"live": "nodemon server.js"
   },
   "dependencies": {
     "express": "^4.16.2"
