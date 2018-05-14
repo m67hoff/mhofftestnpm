@@ -5,6 +5,10 @@ const path = require('path')
 const express = require('express')
 const app = express()
 
+const helmet = require('helmet')
+app.use(helmet())
+
+
 const LOGOUTPUT = process.stdout
 log.info('express', 'Moin Moin from mhofftestnpm')
 
