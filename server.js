@@ -37,7 +37,7 @@ function loadConf () {
   } catch (e) {
     console.log('Read default serverconfig failed : %j', DEFAULTSERVERCONFIG)
     console.log('--> exit')
-    process.exit(1);
+    process.exit(1)
   }
 }
 
