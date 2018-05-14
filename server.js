@@ -1,16 +1,19 @@
 #!/usr/bin/env node
-console.log('Moin Moin')
-
+const log = require('npmlog')
 const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const app = express()
+
+const LOGOUTPUT = process.stdout
+log.info('express', 'Moin Moin from mhofftestnpm')
 
 const DEFAULTCLIENTCONFIG = path.join(__dirname, './webclient/clientconfig.json')
 const CLIENTCONFIG = './clientconfig.json'
 
 const DEFAULTSERVERCONFIG = path.join(__dirname, './serverconfig.json')
 const SERVERCONFIG = './serverconfig.json'
+
 var PORT = 8080
 var LOGLEVEL = 'warn'
 
@@ -21,15 +24,15 @@ function readConfig (cust, def) {
     var f = fs.readFileSync(cust)
     return f
   } catch (e) {
-    console.log('Read custom config failed : %j', cust)
+    log.warn('config', 'Read custom config failed : %j', cust)
   }
-  console.log('Try default config: %j', def)
+  log.info('config', 'Try default config: %j', def)
   try {
     f = fs.readFileSync(def)
     return f
   } catch (e) {
-    console.log('Read default config failed : %j', def)
-    console.log('--> exit')
+    log.error('config', 'Read default config failed : %j', def)
+    log.error('config', '--> exit')
     process.exit(1)
   }
 }
@@ -37,7 +40,7 @@ function readConfig (cust, def) {
 function loadConf () {
   var c = JSON.parse(readConfig(SERVERCONFIG, DEFAULTSERVERCONFIG))
   if (c.LOGLEVEL) { LOGLEVEL = c.LOGLEVEL }
-  console.log('Read config - Set LOGLEVEL to %j', LOGLEVEL)
+  log.info('config', 'Read config - Set LOGLEVEL to %j', LOGLEVEL)
   if (c.PORT) { PORT = c.PORT }
   return c
 }
@@ -45,29 +48,29 @@ loadConf()
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
 app.listen(PORT, function () {
-  console.log('express', 'server starting on ' + PORT)
+  log.info('express', 'server starting on ' + PORT)
 })
 
 app.get('/config', (req, res) => {
-  console.log('NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.info('config', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
-  console.log('env:', json2s(out))
+  log.info('express', 'config:\n', json2s(out))
   res.send(out)
 })
 
 app.get('/clientconfig.json', (req, res) => {
-  console.log('NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.info('config', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
-  console.log('env:', json2s(out))
+  log.info('express', 'config:\n', json2s(out))
   res.send(out)
 })
 
 app.get('/info', (req, res) => {
-  console.log('NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.info('config', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = '<pre>' + json2s(process.env) + '</pre>'
-  console.log('env:', json2s(process.env))
+  log.info('express', 'process.env:\n', json2s(process.env))
   res.send(out)
 })
 
-console.log('static_path:', path.join(__dirname, '/webclient'))
+log.info('express', 'static_path:', path.join(__dirname, '/webclient'))
 app.use(express.static(path.join(__dirname, '/webclient')))

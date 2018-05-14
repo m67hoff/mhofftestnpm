@@ -18,6 +18,7 @@
     "live": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "npmlog": "^4.1.2"
   }
 }
