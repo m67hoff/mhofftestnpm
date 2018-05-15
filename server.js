@@ -72,5 +72,11 @@ app.get('/info', (req, res) => {
   res.send(out)
 })
 
+app.get('/version', (req, res) => {
+  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.verbose('express', 'version:', package.version)
+  res.send(package)
+})
+
 log.info('express', 'static_path:', path.join(__dirname, '/webclient'))
 app.use(express.static(path.join(__dirname, '/webclient')))

@@ -30,6 +30,10 @@
             console.log(data);
         });
 
+        getJSON('/version', function(err, data) {
+            console.log('Version: ', data.version);
+        });
+
     </script>
 
 </body>
