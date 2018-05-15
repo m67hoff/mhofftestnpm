@@ -1,14 +1,5 @@
 {
-    "app": {
-        "logLevel": "INFO",
-        "apiConnectProxy": "http://localhost:8888",
-        "connectInstaller": "//d3gcli72yxqn2z.cloudfront.net/connect/v4"
-    },
-    "config": {
-        "enableLocalClientConfig": true,
-        "localClientConfigKeys": [
-            "logLevel",
-            "apiConnectProxy"
-        ]
-    }
+    "logLevel": "INFO",
+    "proxy": "http://localhost:8888",
+    "text": "moin from config"
 }
