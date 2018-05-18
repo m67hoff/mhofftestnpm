@@ -9,7 +9,7 @@ const helmet = require('helmet')
 
 const LOGOUTPUT = process.stdout
 
-var LOGLEVEL = 'warn'
+var LOGLEVEL = 'info'
 var PORT = 8080
 
 const DEFAULT_WEBAPPCONFIG = path.join(__dirname, './webapp/webappconfig.json')
