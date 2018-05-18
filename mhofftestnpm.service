@@ -10,11 +10,11 @@ Restart=always
 RestartSec=5
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=asperabrowser
+SyslogIdentifier=mhofftestnpm
 
-User=asperabrowser
-Group=asperabrowser
-WorkingDirectory=/home/asperabrowser
+#User=asperabrowser
+#Group=asperabrowser
+#WorkingDirectory=/home/asperabrowser
 
 [Install]
 WantedBy=multi-user.target

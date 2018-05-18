@@ -4,23 +4,18 @@ const fs = require('fs')
 const path = require('path')
 const express = require('express')
 const app = express()
-const package = require('./package.json')
-
+const packagejson = require('./package.json')
 const helmet = require('helmet')
-app.use(helmet())
-
 
 const LOGOUTPUT = process.stdout
-log.info('express', 'Moin Moin from mhofftestnpm v' + package.version)
 
-const DEFAULTCLIENTCONFIG = path.join(__dirname, './webclient/clientconfig.json')
-const CLIENTCONFIG = './clientconfig.json'
-
-const DEFAULTSERVERCONFIG = path.join(__dirname, './serverconfig.json')
-const SERVERCONFIG = './serverconfig.json'
-
-var PORT = 8080
 var LOGLEVEL = 'warn'
+var PORT = 8080
+
+const DEFAULT_WEBAPPCONFIG = path.join(__dirname, './webapp/webappconfig.json')
+const WEBAPPCONFIG = './webappconfig.json'
+const DEFAULT_SERVERCONFIG = path.join(__dirname, './serverconfig.json')
+const SERVERCONFIG = './serverconfig.json'
 
 function json2s (obj) { return JSON.stringify(obj, null, 2) } // format JSON payload for log
 
@@ -43,40 +38,49 @@ function readConfig (cust, def) {
 }
 
 function loadConf () {
-  var c = JSON.parse(readConfig(SERVERCONFIG, DEFAULTSERVERCONFIG))
+  var c = JSON.parse(readConfig(SERVERCONFIG, DEFAULT_SERVERCONFIG))
   if (c.LOGLEVEL) { log.level = c.LOGLEVEL }
   log.warn('log  ', 'Read Config - Set LOGLEVEL to %j', c.LOGLEVEL)
    if (c.PORT) { PORT = c.PORT }
   return c
 }
+
+//**** Main  ****
+
 log.stream = LOGOUTPUT
 log.level = LOGLEVEL
+log.notice('main', 'Moin Moin from mhofftestnpm v' + packagejson.version)
+
 loadConf()
+
+app.use(helmet())
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
 app.listen(PORT, function () {
-  log.info('express', 'server starting on ' + PORT)
-})
-
-app.get(['/config','/clientconfig.json'], (req, res) => {
-  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
-  var out = JSON.parse(readConfig(CLIENTCONFIG, DEFAULTCLIENTCONFIG))
-  log.verbose('express', 'config:\n', json2s(out))
-  res.send(out)
+  log.http('express', 'server starting on ' + PORT)
 })
 
 app.get('/info', (req, res) => {
-  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.http('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
   var out = '<pre>' + json2s(process.env) + '</pre>'
   log.verbose('express', 'process.env:\n', json2s(process.env))
   res.send(out)
 })
 
 app.get('/version', (req, res) => {
-  log.info('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
-  log.verbose('express', 'version:', package.version)
-  res.send(package)
+  log.http('express', 'NodeRequest ' + req.method + ' ' + req.originalUrl)
+  log.verbose('express', 'version:', packagejson.version)
+  res.send(packagejson)
 })
 
-log.info('express', 'static_path:', path.join(__dirname, '/webclient'))
-app.use(express.static(path.join(__dirname, '/webclient')))
+// provide webapp configfile (default or custom)
+var webappconfig = JSON.parse(readConfig(WEBAPPCONFIG, DEFAULT_WEBAPPCONFIG))
+app.get(['/config','/webappconfig.json'], (req, res) => {
+  log.http('express', 'Request ' + req.method + ' ' + req.originalUrl)
+  log.verbose('express', 'webapp config:\n', json2s(webappconfig))
+  res.send(webappconfig)
+})
+
+// serve static files
+log.http('express', 'static_path:', path.join(__dirname, '/webapp'))
+app.use(express.static(path.join(__dirname, '/webapp')))
