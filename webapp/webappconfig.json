@@ -1,5 +1,4 @@
 {
-    "logLevel": "INFO",
-    "proxy": "http://localhost:8888",
-    "text": "moin from config"
+    "logLevel": "DEBUG",
+    "text": "moin from webappconfig v next"
 }
