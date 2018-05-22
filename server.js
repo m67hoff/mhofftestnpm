@@ -2,10 +2,16 @@
 const log = require('npmlog')
 const fs = require('fs')
 const path = require('path')
+const program = require('commander');
+
+const packagejson = require('./package.json')
+const setup = require('./setup')
+
 const express = require('express')
 const app = express()
-const packagejson = require('./package.json')
 const helmet = require('helmet')
+
+const ERR_ROOT = 4
 
 const LOGOUTPUT = process.stdout
 
@@ -17,9 +23,29 @@ const WEBAPPCONFIG = './webappconfig.json'
 const DEFAULT_SERVERCONFIG = path.join(__dirname, './serverconfig.json')
 const SERVERCONFIG = './serverconfig.json'
 
-function json2s (obj) { return JSON.stringify(obj, null, 2) } // format JSON payload for log
+program
+  .option('-c, --config', 'configure and start the service. Enable auto restart')
+  .option('-s, --status', 'show service status')
+  .version(packagejson.version, '-v, --version')
+  .parse(process.argv);
 
-function readConfig (cust, def) {
+
+if (program.config) {
+  loadConf()
+  setup.service()
+  process.exit(0)
+}
+
+if (program.status) {
+  loadConf()
+  setup.status()
+  process.exit(0)
+}
+
+
+function json2s(obj) { return JSON.stringify(obj, null, 2) } // format JSON payload for log
+
+function readConfig(cust, def) {
   try {
     var f = fs.readFileSync(cust)
     return f
@@ -37,18 +63,22 @@ function readConfig (cust, def) {
   }
 }
 
-function loadConf () {
+function loadConf() {
   var c = JSON.parse(readConfig(SERVERCONFIG, DEFAULT_SERVERCONFIG))
   if (c.LOGLEVEL) { log.level = c.LOGLEVEL }
-  log.warn('log  ', 'Read Config - Set LOGLEVEL to %j', c.LOGLEVEL)
-   if (c.PORT) { PORT = c.PORT }
+  log.notice('log  ', 'Read Config - Set LOGLEVEL to %j', c.LOGLEVEL)
+  if (c.PORT) { PORT = c.PORT }
   return c
 }
 
 function drop_root() {
+  if (process.getuid() != 0) {
+    log.error('main', 'Error: only root can run with ports below 1024')
+    process.exit(ERR_ROOT)
+  }
   process.setgid('nobody');
   process.setuid('nobody');
-  log.notice('User ID:',process.getuid()+', Group ID:',process.getgid());
+  log.notice('main', 'drop root - new user id:', process.getuid() + ', Group ID:', process.getgid());
 }
 
 //**** Main  ****
@@ -68,9 +98,14 @@ process.on('SIGHUP', () => {
 app.use(helmet())
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
-app.listen(PORT, function () {
+if ((PORT <= 1024) && (process.getuid() != 0)) {
+  log.error('main', 'Error: PORT ', PORT)
+  log.error('main', 'Error: only root can run with ports below 1024')
+  process.exit(ERR_ROOT)
+}
+app.listen(PORT, function() {
   log.http('express', 'server starting on ' + PORT)
-  drop_root()
+  if (PORT <= 1024) { drop_root() }
 })
 
 app.get('/info', (req, res) => {
@@ -88,7 +123,7 @@ app.get('/version', (req, res) => {
 
 // provide webapp configfile (default or custom)
 var webappconfig = JSON.parse(readConfig(WEBAPPCONFIG, DEFAULT_WEBAPPCONFIG))
-app.get(['/config','/webappconfig.json'], (req, res) => {
+app.get(['/config', '/webappconfig.json'], (req, res) => {
   log.http('express', 'Request ' + req.method + ' ' + req.originalUrl)
   log.verbose('express', 'webapp config:\n', json2s(webappconfig))
   res.send(webappconfig)
