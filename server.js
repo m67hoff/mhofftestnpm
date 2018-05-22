@@ -45,6 +45,12 @@ function loadConf () {
   return c
 }
 
+function drop_root() {
+  process.setgid('nobody');
+  process.setuid('nobody');
+  log.notice('User ID:',process.getuid()+', Group ID:',process.getgid());
+}
+
 //**** Main  ****
 
 log.stream = LOGOUTPUT
@@ -53,11 +59,18 @@ log.notice('main', 'Moin Moin from mhofftestnpm v' + packagejson.version)
 
 loadConf()
 
+process.on('SIGHUP', () => {
+  log.warn('main', 'Received SIGHUP -> reload config files');
+  loadConf()
+  webappconfig = JSON.parse(readConfig(WEBAPPCONFIG, DEFAULT_WEBAPPCONFIG))
+});
+
 app.use(helmet())
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
 app.listen(PORT, function () {
   log.http('express', 'server starting on ' + PORT)
+  drop_root()
 })
 
 app.get('/info', (req, res) => {

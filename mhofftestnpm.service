@@ -6,15 +6,14 @@ ConditionPathExists=/usr/lib/node_modules/mhofftestnpm
 
 [Service]
 ExecStart=/usr/bin/mhofftestnpm
+ExecReload=/bin/kill -HUP $MAINPID
 Restart=always
 RestartSec=5
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=mhofftestnpm
 
-#User=asperabrowser
-#Group=asperabrowser
-#WorkingDirectory=/home/asperabrowser
+#WorkingDirectory=/opt/mhofftestnpm
 
 [Install]
 WantedBy=multi-user.target
