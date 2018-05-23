@@ -59,7 +59,6 @@ exports.status = function() {
             try {
                 // status service             
                 log.info('status', 'service status (systemctl status mhofftestnpm):')
-                child_process.execSync('sleep 1')
                 var stdout = child_process.execSync('systemctl status mhofftestnpm', { "timeout": 2000 })
                 log.info('status', '\n' + stdout)
 

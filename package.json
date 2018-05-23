@@ -13,7 +13,7 @@
     "mhofftestnpm": "./server.js"
   },
   "scripts": {
-    "install": "whoami",
+    "install": "node -e 'console.log(\"run mhofftestnpm --config  to configure and start the service\")'",
     "start": "node server.js",
     "live": "nodemon server.js"
   },

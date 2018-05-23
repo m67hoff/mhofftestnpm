@@ -24,7 +24,7 @@ const DEFAULT_SERVERCONFIG = path.join(__dirname, './serverconfig.json')
 const SERVERCONFIG = './serverconfig.json'
 
 program
-  .option('-c, --config', 'configure and start the service. Enable auto restart')
+  .option('--config', 'configure and start the service. Enable auto restart')
   .option('-s, --status', 'show service status')
   .version(packagejson.version, '-v, --version')
   .parse(process.argv);
