@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-const log = require('npmlog')
 const fs = require('fs')
 const path = require('path')
-const program = require('commander');
+const https = require('https')
 
 const packagejson = require('./package.json')
 const setup = require('./setup')
+
+const log = require('npmlog')
+const program = require('commander');
 
 const express = require('express')
 const app = express()
@@ -17,6 +19,13 @@ const LOGOUTPUT = process.stdout
 
 var LOGLEVEL = 'info'
 var PORT = 8080
+var HTTPSPORT = 8888
+var USE_HTTPS = false
+
+const options = {
+  key: fs.readFileSync("./server.key"),
+  cert: fs.readFileSync("./server.cert")
+};
 
 const DEFAULT_WEBAPPCONFIG = path.join(__dirname, './webapp/webappconfig.json')
 const WEBAPPCONFIG = './webappconfig.json'
@@ -68,6 +77,8 @@ function loadConf() {
   if (c.LOGLEVEL) { log.level = c.LOGLEVEL }
   log.notice('log  ', 'Read Config - Set LOGLEVEL to %j', c.LOGLEVEL)
   if (c.PORT) { PORT = c.PORT }
+  if (c.HTTPSPORT) { HTTPSPORT = c.HTTPSPORT }
+  if (c.USE_HTTPS) { USE_HTTPS = c.USE_HTTPS }
   return c
 }
 
@@ -96,6 +107,23 @@ process.on('SIGHUP', () => {
 });
 
 app.use(helmet())
+
+if (USE_HTTPS) {
+  httpsApp = https.createServer(options, app)
+  httpsApp.listen(HTTPSPORT, function() {
+    log.http('https', 'https server starting on ' + HTTPSPORT)
+  })
+
+  app.use(function(req, res, next) {
+    if (req.secure) {
+      next();
+    } else {
+      var https_url = 'https://' + req.hostname + ':' + HTTPSPORT + req.url
+      log.http('redirect', 'to: ' + https_url)
+      res.redirect(https_url);
+    }
+  })
+}
 
 if (process.env.VCAP_APP_PORT) { PORT = process.env.VCAP_APP_PORT }
 if ((PORT <= 1024) && (process.getuid() != 0)) {

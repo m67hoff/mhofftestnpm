@@ -1,4 +1,6 @@
 {
     "LOGLEVEL": "info",
-    "PORT": 8889
+    "PORT": 8889,
+    "HTTPSPORT": 8890,
+    "USE_HTTPS": true
 }
