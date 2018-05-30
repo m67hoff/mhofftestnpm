@@ -22,15 +22,15 @@ var PORT = 8080
 var HTTPSPORT = 8888
 var USE_HTTPS = false
 
-const options = {
-  key: fs.readFileSync("./server.key"),
-  cert: fs.readFileSync("./server.cert")
-};
-
 const DEFAULT_WEBAPPCONFIG = path.join(__dirname, './webapp/webappconfig.json')
 const WEBAPPCONFIG = './webappconfig.json'
 const DEFAULT_SERVERCONFIG = path.join(__dirname, './serverconfig.json')
 const SERVERCONFIG = './serverconfig.json'
+
+const DEFAULT_KEY = path.join(__dirname, './ssl.key')
+const KEY = './ssl.key'
+const DEFAULT_CERT = path.join(__dirname, './ssl.cert')
+const CERT = './ssl.cert'
 
 program
   .option('--config', 'configure and start the service. Enable auto restart')
@@ -109,7 +109,13 @@ process.on('SIGHUP', () => {
 app.use(helmet())
 
 if (USE_HTTPS) {
-  httpsApp = https.createServer(options, app)
+
+  const httpsOptions = {
+    key: readConfig(KEY, DEFAULT_KEY),
+    cert: readConfig(CERT, DEFAULT_CERT)
+  };
+
+  httpsApp = https.createServer(httpsOptions, app)
   httpsApp.listen(HTTPSPORT, function() {
     log.http('https', 'https server starting on ' + HTTPSPORT)
   })
